@@ -1,0 +1,20 @@
+apply plugin: 'kotlinx-serialization'
+
+repositories {
+    maven { url "https://dl.bintray.com/kotlin/kotlinx" }
+}
+
+task copyJar(type: Copy) {
+    from jar // here it automatically reads jar file produced from jar task
+    into "${project(":services-android").projectDir.absolutePath}/libs"
+}
+jar.finalizedBy(copyJar)
+
+dependencies {
+    implementation project(":utils")
+    implementation project(":services-rest")
+    implementation project(":services-database")
+
+    implementation "io.ktor:ktor-client-serialization-jvm:$ktor_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:$serialization_version"
+}
