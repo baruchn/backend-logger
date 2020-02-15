@@ -14,6 +14,7 @@ dependencies {
     implementation project(":utils")
     implementation project(":services-rest")
     implementation project(":services-database")
+    implementation project(":services-os")
 
     implementation "io.ktor:ktor-client-serialization-jvm:$ktor_version"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:$serialization_version"

@@ -1,10 +1,11 @@
 package il.co.napps.backendlogger.services.android.log
 
 import il.co.napps.backendlogger.services.os.Log
+import io.ktor.client.features.logging.Logger
 
 
 @Suppress("unused")
-internal class LogImpl: Log {
+internal class LogImpl: Log, Logger {
     override fun d(tag: String, message: String) {
         android.util.Log.d(tag, message)
     }
@@ -21,4 +22,7 @@ internal class LogImpl: Log {
         android.util.Log.e(tag, message)
     }
 
+    override fun log(message: String) {
+        android.util.Log.d("REST", message)
+    }
 }

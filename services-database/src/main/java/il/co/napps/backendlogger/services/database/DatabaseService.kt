@@ -1,5 +1,6 @@
 package il.co.napps.backendlogger.services.database
 
+import il.co.napps.backendlogger.services.os.Log
 import java.util.*
 
 interface DatabaseService {
@@ -8,7 +9,7 @@ interface DatabaseService {
 }
 
 @Suppress("unused")
-internal class DatabaseServiceImpl: DatabaseService {
+internal class DatabaseServiceImpl(private val logger: Log): DatabaseService {
 
     private val queue: Queue<DatabaseData> = LinkedList()
 

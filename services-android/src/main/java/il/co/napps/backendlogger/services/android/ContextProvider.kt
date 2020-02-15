@@ -11,6 +11,7 @@ import androidx.annotation.RestrictTo
 
 internal val context: Context
     get() { return _context }
+@Suppress("ObjectPropertyName")
 private lateinit var _context: Context
 
 @Keep
@@ -44,6 +45,7 @@ class BackendLoggerInitProvider : ContentProvider() {
     }
 
     companion object {
+        @Suppress("ObjectPropertyName")
         private val TAG = BackendLoggerInitProvider::class.java.simpleName
     }
 }

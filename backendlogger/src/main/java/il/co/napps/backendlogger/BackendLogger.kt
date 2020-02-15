@@ -17,6 +17,11 @@ class BackendLogger(private val url: String) {
     }
 
     fun sendMessage(messageData: Map<String, Any>) {
+
+        // unsent limit
+
+        // supported types
+
         GlobalScope.launch(Dispatchers.IO) {
             get<MessagesRepository>().sendMessage(Message(System.currentTimeMillis(), url, messageData))
         }

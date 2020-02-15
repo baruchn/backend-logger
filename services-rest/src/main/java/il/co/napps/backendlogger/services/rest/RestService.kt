@@ -1,5 +1,6 @@
 package il.co.napps.backendlogger.services.rest
 
+import il.co.napps.backendlogger.services.os.Log
 import il.co.napps.backendlogger.services.os.RestProvider
 import io.ktor.client.HttpClient
 import io.ktor.client.request.post
@@ -11,6 +12,8 @@ import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 
+private const val TAG = "RestService"
+
 @Suppress
 interface RestService {
     suspend fun sendJsonStringMessage(url: String, message: String): Boolean
@@ -19,12 +22,12 @@ interface RestService {
 @Suppress("unused")
 @UnstableDefault
 @ImplicitReflectionSerializer
-internal class RestServiceImpl(provider: RestProvider): RestService {
+internal class RestServiceImpl(private val logger: Log, provider: RestProvider): RestService {
 
-    val client: HttpClient = provider.getClient()
+    private val client: HttpClient = provider.getClient()
 
     override suspend fun sendJsonStringMessage(url: String, message: String): Boolean {
-//        logd(TAG, "sendJsonStringMessage() called with: url = [$url], message = [$message]")
+        logger.d(TAG, "sendJsonStringMessage() called with: url = [$url], message = [$message]")
         val json = Json(JsonConfiguration.Stable)
 
         return try {
@@ -35,7 +38,7 @@ internal class RestServiceImpl(provider: RestProvider): RestService {
             }
             true
         } catch (cause: Throwable) {
-//            loge(TAG, "postString: ${cause.message}")
+            logger.e(TAG, "postString: ${cause.message}")
             false
         }
     }

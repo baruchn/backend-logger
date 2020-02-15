@@ -2,12 +2,12 @@ package il.co.napps.backendlogger.services.messages
 
 import il.co.napps.backendlogger.services.database.DatabaseData
 import il.co.napps.backendlogger.services.database.DatabaseService
+import il.co.napps.backendlogger.services.os.Log
 import il.co.napps.backendlogger.services.rest.RestService
 import il.co.napps.backendlogger.utils.DIProvidable
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-
 
 private const val TAG = "MessagesRepository"
 
@@ -16,7 +16,7 @@ interface MessagesRepository: DIProvidable {
 }
 
 @Suppress("unused")
-internal class MessageRepositoryImpl(private val restService: RestService, private val databaseService: DatabaseService):
+internal class MessageRepositoryImpl(private val logger: Log, private val restService: RestService, private val databaseService: DatabaseService):
     MessagesRepository {
 
     override suspend fun sendMessage(message: Message) {
@@ -33,7 +33,7 @@ internal class MessageRepositoryImpl(private val restService: RestService, priva
                     jsonElements[entry.key] = JsonPrimitive(entry.value as Boolean)
                 }
                 else -> {
-//                    loge(TAG, "Data of type ${entry.value::class} is not supported")
+                    throw UnsupportedTypeException("Data of type ${entry.value::class} is not supported")
                 }
             }
         }

@@ -8,6 +8,7 @@ jar.finalizedBy(copyJar)
 dependencies {
     implementation project(":di")
     implementation project(":services-messages")
+    implementation project(":services-os")
     implementation project(":utils")
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"

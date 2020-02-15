@@ -6,5 +6,5 @@ task copyJar(type: Copy) {
 jar.finalizedBy(copyJar)
 
 dependencies {
-
+    implementation project(":services-os")
 }
