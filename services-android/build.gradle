@@ -21,14 +21,16 @@ android {
         }
     }
 
-}
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
-//task copyAAR(type: Copy) {
-//    from('build/outputs/aar')
-//    into "${project(":test-app").projectDir.absolutePath}/libs"
-//    include('services-android-debug.aar')
-//}
-//assemble.finalizedBy(copyAAR)
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
+}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -43,4 +45,8 @@ dependencies {
     implementation "io.ktor:ktor-client-okhttp:$ktor_version"
     implementation "io.ktor:ktor-client-serialization-jvm:$ktor_version"
     implementation "io.ktor:ktor-client-logging-jvm:$ktor_version"
+
+    implementation "com.squareup.sqldelight:android-driver:$sqldelight_version"
+
+    implementation "androidx.work:work-runtime-ktx:$work_version"
 }

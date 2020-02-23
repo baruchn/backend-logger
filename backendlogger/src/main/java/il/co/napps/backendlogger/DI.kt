@@ -14,11 +14,15 @@ internal fun initializeDi() {
     }
 }
 
-internal inline fun <reified T: DIProvidable> get(): T =
-    di.get(T::class)
+internal inline fun <reified T: DIProvidable> get(): T {
+    initializeDi()
+    return di.get(T::class)
+}
 
-internal inline fun <reified T: DIProvidable> inject(): Lazy<T> =
-    di.inject(T::class)
+internal inline fun <reified T: DIProvidable> inject(): Lazy<T> {
+    initializeDi()
+    return di.inject(T::class)
+}
 
 // Logging
 

@@ -1,6 +1,6 @@
 package il.co.napps.backendlogger.services.android.log
 
-import il.co.napps.backendlogger.services.os.Log
+import il.co.napps.backendlogger.services.os.log.Log
 import io.ktor.client.features.logging.Logger
 
 

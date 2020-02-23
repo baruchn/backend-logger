@@ -1,4 +1,18 @@
+apply plugin: 'com.squareup.sqldelight'
 
+sqldelight {
+    BackendLoggerDatabase {
+        //package name used for the generated MyDatabase.kt
+        packageName = "il.co.napps.backendlogger.services.database"
+
+        // The directory where to store '.db' schema files relative to the root of the project.
+        // These files are used to verify that migrations yield a database with the latest schema.
+        // Defaults to null so the verification tasks will not be created.
+        schemaOutputDirectory = file("src/main/sqldelight/il/co/napps/backendlogger/services/database")
+    }
+
+    linkSqlite = false
+}
 task copyJar(type: Copy) {
     from jar // here it automatically reads jar file produced from jar task
     into "${project(":services-android").projectDir.absolutePath}/libs"
@@ -7,4 +21,6 @@ jar.finalizedBy(copyJar)
 
 dependencies {
     implementation project(":services-os")
+
+    implementation "com.squareup.sqldelight:sqlite-driver:$sqldelight_version"
 }

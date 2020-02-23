@@ -2,9 +2,11 @@ package il.co.napps.backendlogger.di
 
 import il.co.napps.backendlogger.services.database.DatabaseService
 import il.co.napps.backendlogger.services.messages.MessagesRepository
-import il.co.napps.backendlogger.services.os.InstanceCreator
-import il.co.napps.backendlogger.services.os.Log
-import il.co.napps.backendlogger.services.os.RestProvider
+import il.co.napps.backendlogger.services.os.database.DatabaseDriverProvider
+import il.co.napps.backendlogger.services.os.instancecreator.InstanceCreator
+import il.co.napps.backendlogger.services.os.log.Log
+import il.co.napps.backendlogger.services.os.rest.RestProvider
+import il.co.napps.backendlogger.services.os.scheduler.Scheduler
 import il.co.napps.backendlogger.services.rest.RestService
 import il.co.napps.backendlogger.utils.DIProvidable
 import org.koin.core.Koin
@@ -32,11 +34,15 @@ internal class DIImpl: DI {
 
         val restProvider = instanceCreator.createInstance("il.co.napps.backendlogger.services.android.rest.RestProviderImpl") as RestProvider
         val restService = instanceCreator.createInstance("il.co.napps.backendlogger.services.rest.RestServiceImpl", log, restProvider) as RestService
-        val databaseService = instanceCreator.createInstance("il.co.napps.backendlogger.services.database.DatabaseServiceImpl", log) as DatabaseService
+        val databaseDriverProvider = instanceCreator.createInstance("il.co.napps.backendlogger.services.android.database.DatabaseDriverProviderImpl") as DatabaseDriverProvider
+        val databaseService = instanceCreator.createInstance("il.co.napps.backendlogger.services.database.DatabaseServiceImpl", log, databaseDriverProvider) as DatabaseService
         val messagesRepository = instanceCreator.createInstance("il.co.napps.backendlogger.services.messages.MessageRepositoryImpl", log, restService, databaseService) as MessagesRepository
+        val scheduler = instanceCreator.createInstance("il.co.napps.backendlogger.services.android.scheduler.SchedulerImpl") as Scheduler
 
         val modules = module {
             single { messagesRepository }
+            single { scheduler }
+            single { log }
         }
 
         koin = KoinApplication.create()

@@ -10,16 +10,19 @@ buildscript {
     ext.koin_version = "2.0.1"
     ext.support_version = "28.0.0"
     ext.serialization_version = "0.14.0"
+    ext.sqldelight_version = "1.2.2"
+    ext.work_version = "2.3.2"
     repositories {
         google()
         jcenter()
         maven { url "https://dl.bintray.com/kotlin/kotlinx" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.0-rc02'
+        classpath 'com.android.tools.build:gradle:3.6.0-rc03'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
         classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.2.1'
+        classpath "com.squareup.sqldelight:gradle-plugin:$sqldelight_version"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files

@@ -1,7 +1,7 @@
 package il.co.napps.backendlogger.services.rest
 
-import il.co.napps.backendlogger.services.os.Log
-import il.co.napps.backendlogger.services.os.RestProvider
+import il.co.napps.backendlogger.services.os.log.Log
+import il.co.napps.backendlogger.services.os.rest.RestProvider
 import io.ktor.client.HttpClient
 import io.ktor.client.request.post
 import io.ktor.client.request.url

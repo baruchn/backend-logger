@@ -1,4 +1,4 @@
-package il.co.napps.backendlogger.services.os
+package il.co.napps.backendlogger.services.os.rest
 
 import io.ktor.client.HttpClient
 

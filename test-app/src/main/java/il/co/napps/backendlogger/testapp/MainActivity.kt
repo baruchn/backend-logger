@@ -14,13 +14,15 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        val backendLogger = BackendLogger("https://sdklog.oriient.me/api/log")
+        BackendLogger.initialize("https://sdklog.oriient.me/api/log") {
+            sizeLimit = 2
+        }
         var c = 1
         val message = mutableMapOf<String, Any>()
 
         fab.setOnClickListener {
             message["message"] = "Test message number $c"
-            backendLogger.sendMessage(message)
+            BackendLogger.sendMessage(message)
             c++
         }
     }
