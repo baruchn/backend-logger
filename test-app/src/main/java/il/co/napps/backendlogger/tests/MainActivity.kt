@@ -1,4 +1,4 @@
-package il.co.napps.backendlogger.testapp
+package il.co.napps.backendlogger.tests
 
 import android.os.Bundle
 import android.view.Menu
@@ -9,12 +9,14 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var backendLogger: BackendLogger
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        BackendLogger.initialize("https://sdklog.oriient.me/api/log") {
+        backendLogger = BackendLogger("https://sdklog.oriient.me/api/log") {
             sizeLimit = 2
         }
         var c = 1
@@ -22,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         fab.setOnClickListener {
             message["message"] = "Test message number $c"
-            BackendLogger.sendMessage(message)
+            backendLogger.sendMessage(message)
             c++
         }
     }

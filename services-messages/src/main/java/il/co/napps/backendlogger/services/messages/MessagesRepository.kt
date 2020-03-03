@@ -15,6 +15,7 @@ interface MessagesRepository: DIProvidable {
     fun enqueueMessage(message: Message)
     suspend fun trySendingMessages(): Boolean
     fun getMessagesCount(): Int
+    fun getMessagesCount(url: String): Int
     fun removeAll()
     fun removeOldest()
 }
@@ -67,6 +68,10 @@ internal class MessageRepositoryImpl(private val logger: Log, private val restSe
 
     override fun getMessagesCount(): Int {
         return databaseService.count()
+    }
+
+    override fun getMessagesCount(url: String): Int {
+        return databaseService.countForUrl(url)
     }
 
     override fun removeAll() {

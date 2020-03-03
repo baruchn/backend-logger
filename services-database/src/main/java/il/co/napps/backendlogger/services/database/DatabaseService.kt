@@ -8,6 +8,7 @@ interface DatabaseService {
     fun getOldest(): DatabaseData?
     fun remove(time: Long)
     fun count(): Int
+    fun countForUrl(url: String): Int
     fun removeAll()
     fun removeOldest()
 }
@@ -35,6 +36,10 @@ internal class DatabaseServiceImpl(private val logger: Log, driverProvider: Data
 
     override fun count(): Int {
         return database.backendLoggerQueries.count().executeAsOne().toInt()
+    }
+
+    override fun countForUrl(url: String): Int {
+        return database.backendLoggerQueries.countForUrl(url).executeAsOne().toInt()
     }
 
     override fun removeAll() {
