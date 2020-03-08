@@ -1,5 +1,6 @@
 package il.co.napps.backendlogger
 
+import android.support.annotation.Keep
 import il.co.napps.backendlogger.services.messages.Message
 import il.co.napps.backendlogger.services.messages.MessagesRepository
 import il.co.napps.backendlogger.services.os.scheduler.Scheduler
@@ -11,6 +12,7 @@ import kotlinx.coroutines.launch
 private const val TAG = "BackendLogger"
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
+@Keep
 class BackendLogger(val url: String) {
 
     companion object {
@@ -52,6 +54,7 @@ class BackendLogger(val url: String) {
 
         GlobalScope.launch(Dispatchers.IO) {
             if (!messagesRepository.value.trySendingMessages()) {
+                // TODO: 08/03/2020 limit retry attempts
                 scheduler.value.schedule(ScheduledWork::class.java)
             }
         }
@@ -61,10 +64,12 @@ class BackendLogger(val url: String) {
         return acceptedClasses.contains(clazz)
     }
 
+    @Keep
     class GlobalOptions internal constructor() {
         var sizeLimit = 100
     }
 
+    @Keep
     class LocalOptions internal constructor() {
         var sizeLimit: Int? = null
     }

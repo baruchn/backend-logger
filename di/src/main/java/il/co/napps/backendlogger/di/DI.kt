@@ -27,7 +27,6 @@ internal class DIImpl: DI {
     override val log: Log
 
     init {
-
         val instanceCreator = Class.forName("il.co.napps.backendlogger.services.android.instancecreator.InstanceCreatorImpl").newInstance() as InstanceCreator
 
         log = instanceCreator.createInstance("il.co.napps.backendlogger.services.android.log.LogImpl") as Log
