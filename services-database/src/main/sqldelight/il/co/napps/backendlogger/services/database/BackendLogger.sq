@@ -1,0 +1,29 @@
+CREATE TABLE BackendLoggerMessagesTable (
+  time INTEGER NOT NULL,  
+  url TEXT NOT NULL,
+  message TEXT NOT NULL,
+  PRIMARY KEY (time)
+);
+
+CREATE INDEX index_time ON BackendLoggerMessagesTable (time);
+
+getOldest:
+SELECT * FROM BackendLoggerMessagesTable ORDER BY time ASC LIMIT 1;
+
+insert:
+INSERT OR REPLACE INTO BackendLoggerMessagesTable(time, url, message) VALUES (?, ?, ?);
+
+remove:
+DELETE FROM BackendLoggerMessagesTable WHERE time=?;
+
+removeOldest:
+DELETE FROM BackendLoggerMessagesTable WHERE time IN (SELECT time FROM BackendLoggerMessagesTable ORDER BY time ASC LIMIT 1);
+
+removeAll:
+DELETE FROM BackendLoggerMessagesTable;
+
+count:
+SELECT COUNT(time) FROM BackendLoggerMessagesTable;
+
+countForUrl:
+SELECT COUNT(time) FROM BackendLoggerMessagesTable WHERE url=?;
