@@ -14,3 +14,5 @@
 .cxx
 /maven-key.asc
 /gradle
+gradlew
+gradlew.bat
