@@ -13,7 +13,7 @@ val message = mutableMapOf<String, Any>()
 message["message"] = "Test message"
 backendLogger.sendMessage(message)
 ```
-The messages are sent as JSON payload on a POST request.
+The messages are sent as JSON payload on a POST request to the provided URL.
 
 Structure diagram:
 
