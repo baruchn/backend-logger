@@ -8,7 +8,7 @@ Example of use:
 ```kotlin
 val backendLogger = BackendLogger("https://your.domain/api/log") {
     sizeLimit = 100 // this is the default value
-    var retries = 10 // this is the default value
+    retries = 10 // this is the default value
 }
 val message = mutableMapOf<String, Any>()
 message["message"] = "Test message"
