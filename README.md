@@ -1,4 +1,4 @@
-# backend-logger
+# Backend Logger
 This project is provided as a sample for the Android library modularized architecture.
 
 This library provides a way to log information to a remote server. 
