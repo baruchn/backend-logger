@@ -14,3 +14,6 @@ message["message"] = "Test message"
 backendLogger.sendMessage(message)
 ```
 The messages are sent as JSON payload on a POST request.
+
+Structure diagram:
+![Backend Logger Modules](https://user-images.githubusercontent.com/20625205/76210786-7da0ab80-620d-11ea-9ac7-db4cb28c7033.png)
