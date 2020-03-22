@@ -12,7 +12,7 @@ import kotlinx.serialization.json.JsonPrimitive
 private const val TAG = "MessagesRepository"
 
 interface MessagesRepository: DIProvidable {
-    fun enqueueMessage(message: Message)
+    fun enqueueMessage(message: Message, retries: Int)
     suspend fun trySendingMessages(): Boolean
     fun getMessagesCount(): Int
     fun getMessagesCount(url: String): Int
@@ -25,7 +25,7 @@ internal class MessageRepositoryImpl(private val logger: Log, private val restSe
     MessagesRepository {
 
     @Synchronized
-    override fun enqueueMessage(message: Message) {
+    override fun enqueueMessage(message: Message, retries: Int) {
         val jsonElements = mutableMapOf<String, JsonElement>()
         for (entry in message.data.entries) {
             // TODO: 19/02/2020 support more types
@@ -45,14 +45,25 @@ internal class MessageRepositoryImpl(private val logger: Log, private val restSe
             }
         }
         val str = JsonObject(jsonElements)
-        databaseService.insert(DatabaseData(message.timeReceivedMilli, message.url, str.toString()))
+        databaseService.upsert(DatabaseData(message.timeReceivedMilli, message.url, str.toString(), retries.toLong()))
     }
 
     override suspend fun trySendingMessages(): Boolean {
-        var messageTime = sendOldestMessage()
-        while (messageTime != null) {
-            databaseService.remove(messageTime)
-            messageTime = sendOldestMessage()
+        while (getMessagesCount() > 0) {
+            databaseService.getOldest()?.run {
+                when {
+                    retries <= 0L -> {
+                        databaseService.remove(timeReceivedMilli)
+                    }
+                    restService.sendJsonStringMessage(url, message) -> {
+                        databaseService.remove(timeReceivedMilli)
+                    }
+                    else -> {
+                        retries--
+                        databaseService.upsert(this)
+                    }
+                }
+            }
         }
         return getMessagesCount() == 0
     }

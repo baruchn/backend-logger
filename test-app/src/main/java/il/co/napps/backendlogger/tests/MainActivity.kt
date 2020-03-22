@@ -18,6 +18,7 @@ class MainActivity : AppCompatActivity() {
 
         backendLogger = BackendLogger("https://sdklog.oriient.me/api/log") {
             sizeLimit = 2
+            retries = 1
         }
         var c = 1
         val message = mutableMapOf<String, Any>()

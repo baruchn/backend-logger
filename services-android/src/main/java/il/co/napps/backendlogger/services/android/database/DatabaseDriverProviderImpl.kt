@@ -9,5 +9,5 @@ import il.co.napps.backendlogger.services.os.database.DatabaseDriverProvider
 @Suppress("unused")
 internal class DatabaseDriverProviderImpl:
     DatabaseDriverProvider {
-    override val driver: SqlDriver = AndroidSqliteDriver(BackendLoggerDatabase.Schema, context, "il.co.napps.backendlogger.db")
-}
+        override val driver: SqlDriver = AndroidSqliteDriver(BackendLoggerDatabase.Schema, context, "il.co.napps.backendlogger.database")
+    }

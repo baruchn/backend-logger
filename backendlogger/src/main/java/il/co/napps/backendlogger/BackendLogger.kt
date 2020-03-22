@@ -49,12 +49,12 @@ class BackendLogger(val url: String) {
                 System.currentTimeMillis(),
                 url,
                 messageData
-            )
+            ),
+            options.retries
         )
 
         GlobalScope.launch(Dispatchers.IO) {
             if (!messagesRepository.value.trySendingMessages()) {
-                // TODO: 08/03/2020 limit retry attempts
                 scheduler.value.schedule(ScheduledWork::class.java)
             }
         }
@@ -67,15 +67,19 @@ class BackendLogger(val url: String) {
     @Keep
     class GlobalOptions internal constructor() {
         var sizeLimit = 100
+        var retries = 10
     }
 
     @Keep
     class LocalOptions internal constructor() {
         var sizeLimit: Int? = null
+        var retries: Int? = null
     }
 
     private class OptionsResolver(private val localOptions: LocalOptions, private val globalOptions: GlobalOptions) {
         val sizeLimit: Int
             get() { return localOptions.sizeLimit ?: globalOptions.sizeLimit }
+        val retries: Int
+            get() { return localOptions.retries ?: globalOptions.retries }
     }
 }

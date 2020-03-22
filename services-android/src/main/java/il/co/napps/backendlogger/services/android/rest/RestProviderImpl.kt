@@ -13,8 +13,7 @@ import io.ktor.client.features.logging.Logging
 
 private const val TAG = "RestProvider"
 
-internal class RestProviderImpl:
-    RestProvider {
+internal class RestProviderImpl: RestProvider {
     override fun getClient(): HttpClient {
         return HttpClient(Android) {
             install(JsonFeature)

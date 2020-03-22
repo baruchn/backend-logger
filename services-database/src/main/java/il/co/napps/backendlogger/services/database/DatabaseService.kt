@@ -4,7 +4,7 @@ import il.co.napps.backendlogger.services.os.database.DatabaseDriverProvider
 import il.co.napps.backendlogger.services.os.log.Log
 
 interface DatabaseService {
-    fun insert(data: DatabaseData)
+    fun upsert(data: DatabaseData)
     fun getOldest(): DatabaseData?
     fun remove(time: Long)
     fun count(): Int
@@ -18,14 +18,14 @@ internal class DatabaseServiceImpl(private val logger: Log, driverProvider: Data
 
     private val database = BackendLoggerDatabase(driverProvider.driver)
 
-    override fun insert(data: DatabaseData) {
-        database.backendLoggerQueries.insert(data.timeReceivedMilli, data.url, data.message)
+    override fun upsert(data: DatabaseData) {
+        database.backendLoggerQueries.upsert(data.timeReceivedMilli, data.url, data.message, data.retries)
     }
 
     override fun getOldest(): DatabaseData? {
         val data = database.backendLoggerQueries.getOldest().executeAsOneOrNull()
         data?.run {
-            return DatabaseData(time, url, message)
+            return DatabaseData(time, url, message, retries)
         }
         return null
     }

@@ -41,6 +41,7 @@ dependencies {
 
     implementation project(":services-os")
     implementation project(":backendlogger")
+    implementation project(":utils")
 
     implementation "com.android.support:support-annotations:$support_version"
 
