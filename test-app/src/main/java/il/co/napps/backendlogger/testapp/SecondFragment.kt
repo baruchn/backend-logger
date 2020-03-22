@@ -1,4 +1,4 @@
-package il.co.napps.backendlogger.tests
+package il.co.napps.backendlogger.testapp
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

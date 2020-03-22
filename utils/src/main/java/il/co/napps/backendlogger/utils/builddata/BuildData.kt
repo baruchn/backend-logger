@@ -1,6 +1,8 @@
 package il.co.napps.backendlogger.utils.builddata
 
-interface BuildData {
+import il.co.napps.backendlogger.utils.DIProvidable
+
+interface BuildData: DIProvidable {
     val isDebug: Boolean
 }
 

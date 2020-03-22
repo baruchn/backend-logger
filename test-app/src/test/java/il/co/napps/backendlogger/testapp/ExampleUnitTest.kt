@@ -1,4 +1,4 @@
-package il.co.napps.backendlogger.tests
+package il.co.napps.backendlogger.testapp
 
 import org.junit.Test
 
