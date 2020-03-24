@@ -68,15 +68,6 @@ internal class MessageRepositoryImpl(private val logger: Log, private val restSe
         return getMessagesCount() == 0
     }
 
-    private suspend fun sendOldestMessage(): Long? {
-        databaseService.getOldest()?.run {
-            if (restService.sendJsonStringMessage(url, message)) {
-                return timeReceivedMilli
-            }
-        }
-        return null
-    }
-
     override fun getMessagesCount(): Int {
         return databaseService.count()
     }

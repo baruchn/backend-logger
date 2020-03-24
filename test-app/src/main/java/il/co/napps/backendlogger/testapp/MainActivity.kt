@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        backendLogger = BackendLogger("https://sdklog.oriient.me/api/log") {
+        backendLogger = BackendLogger(BuildConfig.TEST_URL) {
             sizeLimit = 2
             retries = 1
         }

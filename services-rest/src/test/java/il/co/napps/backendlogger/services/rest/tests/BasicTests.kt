@@ -7,6 +7,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.features.json.JsonFeature
+import io.ktor.content.TextContent
 import io.ktor.http.ContentType
 import io.ktor.http.fullPath
 import io.mockk.every
@@ -14,9 +15,12 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.UnstableDefault
+import kotlinx.serialization.json.Json
 import org.junit.Test
+import java.lang.Exception
 import kotlin.test.fail
 
+private const val TAG = "BasicTests"
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -31,6 +35,8 @@ class BasicTests {
     fun testSendingMessage() {
 
         val sendUrl = "https://www.my.domain/api/route"
+        val requestKey = "message"
+        val requestValue = "Test Message"
 
         val log = object: Log {
             override fun d(tag: String, message: String) {
@@ -58,6 +64,11 @@ class BasicTests {
                     when(request.url.toString()) {
                         sendUrl -> {
                             assert(request.headers.contains("Accept", ContentType.Application.Json.toString())) { "Missing JSON Header" }
+                            try {
+                                assert(Json.parseJson((request.body as TextContent).text).jsonObject[requestKey]!!.jsonObject["content"].toString() == requestValue) { "Invalid message structure" }
+                            } catch (e: Exception) {
+                                fail("Failed to parse request body: ${e.message}")
+                            }
                             respond("")
                         }
                         else -> fail("Unknown url: ${request.url.fullPath}")
@@ -70,6 +81,6 @@ class BasicTests {
 
         val restService = RestServiceImpl(log, restProvider)
 
-        runBlocking { assert(restService.sendJsonStringMessage(sendUrl, "{\"message\":\"Test Message\"}")) { "Failed to send message. See logs." } }
+        runBlocking { assert(restService.sendJsonStringMessage(sendUrl, "{\"$requestKey\":\"$requestValue\"}")) { "Failed to send message. See logs." } }
     }
 }
