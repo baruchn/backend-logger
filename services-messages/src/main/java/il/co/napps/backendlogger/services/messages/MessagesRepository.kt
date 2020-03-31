@@ -8,11 +8,12 @@ import il.co.napps.backendlogger.utils.DIProvidable
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import java.text.DecimalFormat
 
 private const val TAG = "MessagesRepository"
 
 interface MessagesRepository: DIProvidable {
-    fun enqueueMessage(message: Message, retries: Int)
+    fun enqueueMessage(message: Message, retries: Int = 0)
     suspend fun trySendingMessages(): Boolean
     fun getMessagesCount(): Int
     fun getMessagesCount(url: String): Int
@@ -44,8 +45,12 @@ internal class MessageRepositoryImpl(private val logger: Log, private val restSe
                 }
             }
         }
+        if (jsonElements.isEmpty()) {
+            logger.w(TAG, "Not sending messages with empty data")
+            return
+        }
         val str = JsonObject(jsonElements)
-        databaseService.upsert(DatabaseData(message.timeReceivedMilli, message.url, str.toString(), retries.toLong()))
+        databaseService.upsert(DatabaseData(message.timeReceivedMilli, message.url, str.toString(), if (retries >=0 ) retries.toLong() else 0))
     }
 
     override suspend fun trySendingMessages(): Boolean {
@@ -60,7 +65,11 @@ internal class MessageRepositoryImpl(private val logger: Log, private val restSe
                     }
                     else -> {
                         retries--
-                        databaseService.upsert(this)
+                        if (retries <= 0L) {
+                            databaseService.remove(timeReceivedMilli)
+                        } else {
+                            databaseService.upsert(this)
+                        }
                     }
                 }
             }
@@ -82,5 +91,9 @@ internal class MessageRepositoryImpl(private val logger: Log, private val restSe
 
     override fun removeOldest() {
         databaseService.removeOldest()
+    }
+
+    companion object {
+
     }
 }

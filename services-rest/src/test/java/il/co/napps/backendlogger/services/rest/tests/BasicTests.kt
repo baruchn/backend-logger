@@ -12,15 +12,15 @@ import io.ktor.http.ContentType
 import io.ktor.http.fullPath
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
 import org.junit.Test
-import java.lang.Exception
+import java.math.RoundingMode
+import java.text.DecimalFormat
 import kotlin.test.fail
-
-private const val TAG = "BasicTests"
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -38,34 +38,24 @@ class BasicTests {
         val requestKey = "message"
         val requestValue = "Test Message"
 
-        val log = object: Log {
-            override fun d(tag: String, message: String) {
-                println("D:$tag: $message")
-            }
-
-            override fun i(tag: String, message: String) {
-                println("I:$tag: $message")
-            }
-
-            override fun w(tag: String, message: String) {
-                println("W:$tag: $message")
-            }
-
-            override fun e(tag: String, message: String) {
-                println("E:$tag: $message")
-            }
+        val log = mockk<Log>(relaxed = true)
+        every { log.e(any(), any()) } answers {
+            println("$${arg<String>(0)}: ${arg<String>(1)}")
+            nothing
         }
 
         val restProvider = mockk<RestProvider>()
+        var called = 0
         val httpClient = HttpClient(MockEngine) {
             install(JsonFeature)
             engine {
                 addHandler { request ->
+                    called++
                     when(request.url.toString()) {
                         sendUrl -> {
                             assert(request.headers.contains("Accept", ContentType.Application.Json.toString())) { "Missing JSON Header" }
                             try {
-                                assert(Json.parseJson((request.body as TextContent).text).jsonObject[requestKey]!!.jsonObject["content"].toString() == requestValue) { "Invalid message structure" }
+                                assert(Json.parseJson((request.body as TextContent).text).jsonObject[requestKey]!!.jsonObject["content"].toString().removePrefix("\"").removeSuffix("\"") == requestValue) { "Invalid message structure" }
                             } catch (e: Exception) {
                                 fail("Failed to parse request body: ${e.message}")
                             }
@@ -81,6 +71,13 @@ class BasicTests {
 
         val restService = RestServiceImpl(log, restProvider)
 
-        runBlocking { assert(restService.sendJsonStringMessage(sendUrl, "{\"$requestKey\":\"$requestValue\"}")) { "Failed to send message. See logs." } }
+        val message = "{\"$requestKey\":\"$requestValue\"}"
+        runBlocking { assert(restService.sendJsonStringMessage(sendUrl, message)) { "Failed to send message. See logs." } }
+
+        assert(called == 1) { "Post called $called times" }
+
+        verify(exactly = 1) { restProvider.getClient() }
     }
+
+
 }
