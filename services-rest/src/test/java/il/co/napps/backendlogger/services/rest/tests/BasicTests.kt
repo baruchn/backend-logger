@@ -18,8 +18,6 @@ import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
 import org.junit.Test
-import java.math.RoundingMode
-import java.text.DecimalFormat
 import kotlin.test.fail
 
 /**
@@ -72,7 +70,7 @@ class BasicTests {
         val restService = RestServiceImpl(log, restProvider)
 
         val message = "{\"$requestKey\":\"$requestValue\"}"
-        runBlocking { assert(restService.sendJsonStringMessage(sendUrl, message)) { "Failed to send message. See logs." } }
+        runBlocking { assert(restService.sendMessage(sendUrl, message)) { "Failed to send message. See logs." } }
 
         assert(called == 1) { "Post called $called times" }
 

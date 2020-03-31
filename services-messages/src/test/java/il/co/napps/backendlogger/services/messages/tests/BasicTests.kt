@@ -8,20 +8,12 @@ import il.co.napps.backendlogger.services.os.log.Log
 import il.co.napps.backendlogger.services.rest.RestService
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.ImplicitReflectionSerializer
-import kotlinx.serialization.UnstableDefault
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import org.junit.Test
 
 /**
  * Example local unit test, which will execute on the development machine (host).
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
-@UnstableDefault
-@ImplicitReflectionSerializer
 class BasicTests {
 
     private val log: Log
@@ -95,12 +87,12 @@ class BasicTests {
 
         every { databaseService.getOldest() } answers { dbData }
 
-        coEvery { restService.sendJsonStringMessage(any(), any()) } answers { true }
+        coEvery { restService.sendMessage(any(), any()) } answers { true }
 
         runBlocking { messagesRepository.trySendingMessages() }
 
         verify(exactly = count) { databaseService.remove(any()) }
-        coVerify(exactly = count) { restService.sendJsonStringMessage(any(), any()) }
+        coVerify(exactly = count) { restService.sendMessage(any(), any()) }
     }
 
     @Test
@@ -120,13 +112,13 @@ class BasicTests {
             dbData = null
         }
 
-        coEvery { restService.sendJsonStringMessage(any(), any()) } answers { false }
+        coEvery { restService.sendMessage(any(), any()) } answers { false }
 
         runBlocking { messagesRepository.trySendingMessages() }
 
         verify(exactly = count - 1) { databaseService.upsert(any()) }
         verify(exactly = 1) { databaseService.remove(any()) }
-        coVerify(exactly = count) { restService.sendJsonStringMessage(any(), any()) }
+        coVerify(exactly = count) { restService.sendMessage(any(), any()) }
 
     }
 
@@ -148,7 +140,7 @@ class BasicTests {
             dbData = null
         }
 
-        coEvery { restService.sendJsonStringMessage(any(), any()) } answers {
+        coEvery { restService.sendMessage(any(), any()) } answers {
             if (failsCount > 0) {
                 failsCount--
                 false
@@ -161,7 +153,7 @@ class BasicTests {
 
         verify(exactly = fails) { databaseService.upsert(any()) }
         verify(exactly = 1) { databaseService.remove(any()) }
-        coVerify(exactly = fails + 1) { restService.sendJsonStringMessage(any(), any()) }
+        coVerify(exactly = fails + 1) { restService.sendMessage(any(), any()) }
 
     }
 

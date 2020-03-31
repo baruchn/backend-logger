@@ -5,36 +5,26 @@ import il.co.napps.backendlogger.services.os.rest.RestProvider
 import io.ktor.client.HttpClient
 import io.ktor.client.request.post
 import io.ktor.client.request.url
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
-import kotlinx.serialization.ImplicitReflectionSerializer
-import kotlinx.serialization.UnstableDefault
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 
 private const val TAG = "RestService"
 
 @Suppress
 interface RestService {
-    suspend fun sendJsonStringMessage(url: String, message: String): Boolean
+    suspend fun sendMessage(url: String, message: Map<String, Any>, serializer: RestDataSerializer): Boolean
 }
 
 @Suppress("unused")
-@UnstableDefault
-@ImplicitReflectionSerializer
 internal class RestServiceImpl(private val logger: Log, provider: RestProvider): RestService {
 
     private val client: HttpClient = provider.getClient()
 
-    override suspend fun sendJsonStringMessage(url: String, message: String): Boolean {
-        logger.d(TAG, "sendJsonStringMessage() called with: url = [$url], message = [$message]")
-        val json = Json(JsonConfiguration.Stable)
+    override suspend fun sendMessage(url: String, message: Map<String, Any>, serializer: RestDataSerializer): Boolean {
+        logger.d(TAG, "sendMessage() called with: url = [$url], message = [$message], serializer = [$serializer]")
 
         return try {
             client.post<Any?> {
                 url(url)
-                contentType(ContentType.Application.Json)
-                body = json.parseJson(message)
+                body = serializer.serialize(message)
             }
             true
         } catch (cause: Throwable) {
