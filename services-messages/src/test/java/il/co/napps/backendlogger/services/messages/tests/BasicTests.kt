@@ -5,9 +5,11 @@ import il.co.napps.backendlogger.services.database.DatabaseService
 import il.co.napps.backendlogger.services.messages.Message
 import il.co.napps.backendlogger.services.messages.MessageRepositoryImpl
 import il.co.napps.backendlogger.services.os.log.Log
+import il.co.napps.backendlogger.services.rest.RestDataSerializer
 import il.co.napps.backendlogger.services.rest.RestService
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
+import org.junit.Test
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -28,7 +30,8 @@ class BasicTests {
 
     private val restService = mockk<RestService>()
     private val databaseService = mockk<DatabaseService>(relaxed = true)
-    private val messagesRepository = MessageRepositoryImpl(log, restService, databaseService)
+    private val serializer = mockk<RestDataSerializer>()
+    private val messagesRepository = MessageRepositoryImpl(log, restService, databaseService, serializer)
 
     @Test
     fun testEnqueueMessage() {
@@ -56,20 +59,12 @@ class BasicTests {
         val timeReceivedMilli = System.currentTimeMillis()
         val message = Message(timeReceivedMilli, sendUrl, messageData)
 
-        val jsonElements = mutableMapOf<String, JsonElement>()
-        jsonElements[strKey] = JsonPrimitive(strValue)
-        jsonElements[intKey] = JsonPrimitive(intValue)
-        jsonElements[longKey] = JsonPrimitive(longValue)
-        jsonElements[floatKey] = JsonPrimitive(floatValue)
-        jsonElements[doubleKey] = JsonPrimitive(doubleValue)
-        val jsonObject = JsonObject(jsonElements)
-
         every { databaseService.upsert(any()) } answers {
             val data = arg<DatabaseData>(0)
             assert(data.timeReceivedMilli == timeReceivedMilli) { "Invalid time received" }
             assert(data.url == sendUrl) { "Invalid url" }
             assert(data.retries == retries.toLong()) { "invalid retries" }
-            assert(data.message == jsonObject.toString()) { "Invalid message. expected \"$jsonObject\" but received \"${data.message}\"" }
+            assert(data.message == messageData) { "Invalid message. expected $messageData but received ${data.message}" }
             nothing
         }
 
@@ -81,24 +76,24 @@ class BasicTests {
     @Test
     fun testSendingMessages() {
         var count = 10
-        val dbData = DatabaseData(0, "", "", 1)
+        val dbData = DatabaseData(0, "", mapOf(), 1)
 
         every { databaseService.count() } answers { --count }
 
         every { databaseService.getOldest() } answers { dbData }
 
-        coEvery { restService.sendMessage(any(), any()) } answers { true }
+        coEvery { restService.sendMessage(any(), any(), any()) } answers { true }
 
         runBlocking { messagesRepository.trySendingMessages() }
 
         verify(exactly = count) { databaseService.remove(any()) }
-        coVerify(exactly = count) { restService.sendMessage(any(), any()) }
+        coVerify(exactly = count) { restService.sendMessage(any(), any(), any()) }
     }
 
     @Test
     fun testRetriesFail() {
         val count = 10
-        var dbData: DatabaseData? = DatabaseData(0, "", "", count.toLong())
+        var dbData: DatabaseData? = DatabaseData(0, "", mapOf(), count.toLong())
 
         every { databaseService.count() } answers { if (dbData != null) 1 else 0 }
 
@@ -112,13 +107,13 @@ class BasicTests {
             dbData = null
         }
 
-        coEvery { restService.sendMessage(any(), any()) } answers { false }
+        coEvery { restService.sendMessage(any(), any(), any()) } answers { false }
 
         runBlocking { messagesRepository.trySendingMessages() }
 
         verify(exactly = count - 1) { databaseService.upsert(any()) }
         verify(exactly = 1) { databaseService.remove(any()) }
-        coVerify(exactly = count) { restService.sendMessage(any(), any()) }
+        coVerify(exactly = count) { restService.sendMessage(any(), any(), any()) }
 
     }
 
@@ -126,7 +121,7 @@ class BasicTests {
     fun testRetriesSuccess() {
         val fails = 5
         var failsCount = fails
-        var dbData: DatabaseData? = DatabaseData(0, "", "", (failsCount + 1).toLong())
+        var dbData: DatabaseData? = DatabaseData(0, "", mapOf(), (failsCount + 1).toLong())
 
         every { databaseService.count() } answers { if (dbData != null) 1 else 0 }
 
@@ -140,7 +135,7 @@ class BasicTests {
             dbData = null
         }
 
-        coEvery { restService.sendMessage(any(), any()) } answers {
+        coEvery { restService.sendMessage(any(), any(), any()) } answers {
             if (failsCount > 0) {
                 failsCount--
                 false
@@ -153,8 +148,7 @@ class BasicTests {
 
         verify(exactly = fails) { databaseService.upsert(any()) }
         verify(exactly = 1) { databaseService.remove(any()) }
-        coVerify(exactly = fails + 1) { restService.sendMessage(any(), any()) }
-
+        coVerify(exactly = fails + 1) { restService.sendMessage(any(), any(), any()) }
     }
 
 }
