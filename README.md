@@ -16,6 +16,9 @@ backendLogger.sendMessage(message)
 ```
 The messages are sent as JSON payload on a POST request to the provided URL.
 
+**Important!**
+Only String, Number and Boolan values are surrently supported.
+
 Structure diagram:
 
 
