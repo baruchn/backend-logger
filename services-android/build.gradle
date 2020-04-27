@@ -10,6 +10,17 @@ android {
         versionName "1.0"
     }
 
+    buildTypes {
+        debug {
+            minifyEnabled true
+            testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project-test.pro'
+        }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/*.kotlin_module'
+    }
+
     with androidCommon
 }
 
@@ -30,4 +41,11 @@ dependencies {
     implementation "com.squareup.sqldelight:android-driver:$sqldelight_version"
 
     implementation "androidx.work:work-runtime-ktx:$work_version"
+
+    testImplementation "junit:junit:$junit_version"
+    testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+    testImplementation "io.mockk:mockk:$mockk_version"
+    androidTestImplementation "androidx.test:runner:$android_tests_versdion"
+    androidTestImplementation "androidx.test:rules:$android_tests_versdion"
+    androidTestImplementation project(':services-serializer-json')
 }

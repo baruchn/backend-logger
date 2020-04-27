@@ -14,4 +14,6 @@ dependencies {
 
     implementation "org.koin:koin-core:$koin_version"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+
+    testImplementation project(':di')
 }

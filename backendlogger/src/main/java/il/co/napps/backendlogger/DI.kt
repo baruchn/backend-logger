@@ -5,7 +5,7 @@ import il.co.napps.backendlogger.utils.DIProvidable
 
 private const val TAG = "BackendLoggerDI"
 
-private lateinit var di: DI
+internal lateinit var di: DI
 
 internal fun initializeDi() {
     if (!::di.isInitialized) {

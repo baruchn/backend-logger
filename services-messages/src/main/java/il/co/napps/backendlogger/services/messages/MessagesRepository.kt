@@ -6,11 +6,11 @@ import il.co.napps.backendlogger.services.os.log.Log
 import il.co.napps.backendlogger.services.rest.RestDataSerializer
 import il.co.napps.backendlogger.services.rest.RestService
 import il.co.napps.backendlogger.utils.DIProvidable
-import java.io.*
 
 private const val TAG = "MessagesRepository"
 
 interface MessagesRepository: DIProvidable {
+    val acceptedClasses: List<Class<Any>>
     fun enqueueMessage(message: Message, retries: Int = 0)
     suspend fun trySendingMessages(): Boolean
     fun getMessagesCount(): Int
@@ -26,6 +26,9 @@ internal class MessageRepositoryImpl(
     private val databaseService: DatabaseService,
     private val serializer: RestDataSerializer
 ): MessagesRepository {
+
+    override val acceptedClasses: List<Class<Any>>
+        get() = serializer.acceptedClasses
 
     @Synchronized
     override fun enqueueMessage(message: Message, retries: Int) {

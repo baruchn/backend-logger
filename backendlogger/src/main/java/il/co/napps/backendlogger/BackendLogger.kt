@@ -19,7 +19,6 @@ class BackendLogger(val url: String) {
         private val globalOptions = GlobalOptions()
         private val messagesRepository: Lazy<MessagesRepository> = inject()
         private val scheduler: Lazy<Scheduler> = inject()
-        private val acceptedClasses = listOf<Class<Any>>(String.javaClass, Int.javaClass, Long.javaClass, Float.javaClass, Double.javaClass, Boolean.javaClass)
 
         fun configureGlobal(block: GlobalOptions.() -> Unit = {}) {
             this.globalOptions.apply(block)
@@ -61,7 +60,7 @@ class BackendLogger(val url: String) {
     }
 
     fun isSupportedDataType(clazz: Class<Any>): Boolean {
-        return acceptedClasses.contains(clazz)
+        return messagesRepository.value.acceptedClasses.contains(clazz)
     }
 
     @Keep

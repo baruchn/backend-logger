@@ -25,6 +25,9 @@ class JsonRestDataSerializer(private val logger: Log, restProvider: RestProvider
         }
     }
 
+    override val acceptedClasses: List<Class<Any>>
+        get() = acceptedClasses
+
     override fun serialize(data: Map<String, Any>): OutgoingContent {
         val jsonElements = mutableMapOf<String, JsonElement>()
         for (entry in data.entries) {
@@ -45,5 +48,9 @@ class JsonRestDataSerializer(private val logger: Log, restProvider: RestProvider
             }
         }
         return TextContent(JsonObject(jsonElements).toString(), ContentType.Application.Json)
+    }
+
+    companion object {
+        private val acceptedClasses = listOf<Class<Any>>(String.javaClass, Int.javaClass, Long.javaClass, Float.javaClass, Double.javaClass, Boolean.javaClass)
     }
 }
