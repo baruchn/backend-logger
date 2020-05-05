@@ -14,10 +14,12 @@ val message = mutableMapOf<String, Any>()
 message["message"] = "Test message"
 backendLogger.sendMessage(message)
 ```
-The messages are sent as JSON payload on a POST request to the provided URL.
+The messages are sent as payload on a POST request to the provided URL.
+They are serialized by a serializer before being sent.
 
-**Important!**
-Only String, Number and Boolan values are surrently supported.
+Currently only a partial JSON serializer is available. This serializer currently only supports String, Number and Boolan values.
+
+The serializer is implemented as a separate library for extendability.
 
 Structure diagram:
 
